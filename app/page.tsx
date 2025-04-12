@@ -1,18 +1,15 @@
-import { SignIn } from "@/components/auth/AuthButtons";
+import { SignOut } from "@/components/auth/AuthButtons";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
     const session = await auth.api.getSession({
-        headers: await headers(), // you need to pass the headers object.
+        headers: await headers(),
     });
+
     if (!session) {
-        return (
-            <>
-                <div>You are not authenticated</div>
-                <SignIn />
-            </>
-        );
+        redirect("/login");
     }
 
     const user = session.user;
@@ -22,6 +19,7 @@ export default async function Home() {
             <div>
                 <pre>{JSON.stringify(user, null, 2)}</pre>
             </div>
+            <SignOut />
         </>
     );
 }
