@@ -15,7 +15,7 @@ export const signUpEmail = validatedAction(SignUpSchema, async (data) => {
                 password,
             },
         });
-        return {success : true};
+        return { success: "Verification link sent to your email!" };
     } catch (error) {
         if (error instanceof APIError) {
             return {

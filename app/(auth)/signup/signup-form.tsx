@@ -28,11 +28,6 @@ export default function SignUpForm() {
         }
     );
     
-    useEffect(() => {
-        if (state?.success) {
-            router.push("/");
-        }
-    }, [state, router]);
     return (
         <Card>
             <CardHeader>
@@ -72,7 +67,7 @@ export default function SignUpForm() {
                                 id="password"
                                 name="password"
                                 type="password"
-                                defaultValue={state.name}
+                                defaultValue={state.password}
                                 required
                             />
                         </div>
@@ -85,6 +80,11 @@ export default function SignUpForm() {
                         {state?.error && (
                             <div className="text-red-500 text-sm flex items-center justify-center">
                                 {state.error}
+                            </div>
+                        )}
+                        {state?.success && (
+                            <div className="text-green-500 text-sm flex items-center justify-center">
+                                {state.success}
                             </div>
                         )}
                         Already have an account?{" "}
