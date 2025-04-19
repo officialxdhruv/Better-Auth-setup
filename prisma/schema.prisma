@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
@@ -20,8 +19,25 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  questions Question[]
+
+  username        String?
+  displayUsername String?
+
   @@unique([email])
+  @@unique([username])
   @@map("user")
+}
+
+model Question {
+  id        String    @id @default(cuid())
+  authorId  String
+  title     String
+  excerpt   String
+  content   String
+  tags      String[] // Postgres can store array types
+  createdAt DateTime  @default(now())
+  author    User      @relation(fields: [authorId], references: [id])
 }
 
 model Session {

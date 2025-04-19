@@ -15,7 +15,7 @@ export default function VerifyEmailPage() {
     }, [router]);
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center text-center px-4">
+        <div className="text-center px-4 flex items-center flex-col justify-center h-full">
             <h1 className="text-2xl font-semibold text-green-600">
                 Email verified successfully!
             </h1>

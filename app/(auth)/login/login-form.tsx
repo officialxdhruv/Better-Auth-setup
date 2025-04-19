@@ -4,6 +4,7 @@ import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -15,6 +16,8 @@ import { ActionState } from "@/lib/action-helpers";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Github } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -32,15 +35,41 @@ export default function LoginForm() {
         }
     }, [state, router]);
 
+
     return (
-        <Card>
+        <Card className="border-0 md:border">
             <CardHeader>
-                <CardTitle>Login to your account</CardTitle>
+                <CardTitle className="text-2xl font-bold text-green-600">Login</CardTitle>
                 <CardDescription>
-                    Enter you email below to login to your account
+                    Enter your email and password to access your account
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+                <Button
+                    onClick={async () => {
+                        await authClient.signIn.social({
+                            provider: "github",
+                            callbackURL: "/",
+                        });
+                    }}
+                    variant="outline"
+                    className="w-full"
+                    type="button"
+                >
+                    <Github className="size-4" />
+                    Sign in with GitHub
+                </Button>
+                <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                        <Separator />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                            Or continue with
+                        </span>
+                    </div>
+                </div>
+
                 <form action={formAction}>
                     <div className="flex flex-col gap-6">
                         <div className="grid gap-3">
@@ -55,8 +84,14 @@ export default function LoginForm() {
                             />
                         </div>
                         <div className="grid gap-3">
-                            <div className="flex items-center">
+                            <div className="flex items-center justify-between">
                                 <Label htmlFor="password">Password</Label>
+                                <a
+                                    href="#"
+                                    className="text-sm underline-offset-4 hover:underline"
+                                >
+                                    Forgot password?
+                                </a>
                             </div>
                             <Input
                                 id="password"
@@ -74,46 +109,28 @@ export default function LoginForm() {
                             >
                                 Sign in
                             </Button>
-                            <Button
-                                onClick={async () => {
-                                    await authClient.signIn.social({
-                                        provider: "github",
-                                        callbackURL: "/",
-                                    });
-                                }}
-                                variant="outline"
-                                className="w-full"
-                                type="button"
-                            >
-                                Sign in with GitHub
-                            </Button>
                         </div>
-                    </div>
-
-                    <div className="text-sm flex flex-col items-center justify-center  gap-2 mt-2">
-                        {state?.error && (
-                            <div className="text-red-500 text-sm flex items-center justify-center">
-                                {state.error}
-                            </div>
-                        )}
-                        <div>
-                            Don't have an account?{" "}
-                            <Link
-                                href="/signup"
-                                className="underline underline-offset-4 "
-                            >
-                                Sign up
-                            </Link>
-                        </div>
-                        <a
-                            href="#"
-                            className="text-sm underline-offset-4 hover:underline"
-                        >
-                            Forgot your password?
-                        </a>
                     </div>
                 </form>
             </CardContent>
+            <CardFooter className="flex justify-center">
+                <div className="text-sm flex flex-col items-center justify-center  gap-2 ">
+                    {state?.error && (
+                        <div className="text-red-500 text-sm flex items-center justify-center">
+                            {state.error}
+                        </div>
+                    )}
+                    <div>
+                        Don't have an account?{" "}
+                        <Link
+                            href="/signup"
+                            className="underline underline-offset-4 "
+                        >
+                            Sign up
+                        </Link>
+                    </div>
+                </div>
+            </CardFooter>
         </Card>
     );
 }

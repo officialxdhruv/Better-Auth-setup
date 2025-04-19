@@ -8,12 +8,15 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@radix-ui/react-label";
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 import { signUpEmail } from "../action";
 import { ActionState } from "@/lib/action-helpers";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import { Github } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
 
 export default function SignUpForm() {
     const router = useRouter();
@@ -27,16 +30,42 @@ export default function SignUpForm() {
             passoword: "",
         }
     );
-    
+
     return (
-        <Card>
+        <Card className="border-0 md:border">
             <CardHeader>
-                <CardTitle>Sign up for an account</CardTitle>
+                <CardTitle className="text-2xl font-bold">
+                    Create an account
+                </CardTitle>
                 <CardDescription>
-                    Enter your email below to sign up for an account
+                    Enter your information to create an account
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+                <Button
+                    onClick={async () => {
+                        await authClient.signIn.social({
+                            provider: "github",
+                            callbackURL: "/",
+                        });
+                    }}
+                    variant="outline"
+                    className="w-full"
+                    type="button"
+                >
+                    <Github className="size-4" />
+                    Sign in with GitHub
+                </Button>
+                <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                        <Separator />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                            Or continue with
+                        </span>
+                    </div>
+                </div>
                 <form action={formAction}>
                     <div className="flex flex-col gap-6">
                         <div className="grid gap-3">
