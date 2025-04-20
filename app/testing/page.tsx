@@ -4,7 +4,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -14,6 +13,7 @@ import { useActionState } from "react";
 import { handleForm } from "./actions";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { string } from "zod";
 
 export default function page() {
     const [state, formAction, isPending] = useActionState(handleForm, {
@@ -21,14 +21,18 @@ export default function page() {
         error: null,
         username: "",
         password: "",
+        tagsArray: [],
     });
     if (state.success) {
         toast.success("Form submitted successfully!");
     }
+    const tags = ["react", "nextjs", "zod"];
+
+    console.log(state);
     return (
         <div className="flex items-center justify-center h-[calc(100vh_-_13.875rem)] md:h-[calc(100vh-8.125rem)]">
             <div className="min-w-sm mx-auto">
-                <Card>
+                <Card className="hover:shadow-[0_0_10px_theme('color.green.600')] hover:">
                     <CardHeader>
                         <CardTitle className="text-2xl font-bold">
                             Form
@@ -70,6 +74,11 @@ export default function page() {
                                         </p>
                                     )}
                                 </div>
+                                <input
+                                    type="hidden"
+                                    value={tags.join(", ")}
+                                    name="tags"
+                                />
                                 <Button type="submit" disabled={isPending}>
                                     {isPending ? (
                                         <span className="flex items-center gap-2">
