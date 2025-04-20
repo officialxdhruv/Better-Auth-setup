@@ -20,6 +20,12 @@ model User {
   accounts      Account[]
 
   questions Question[]
+  comments  Comment[]
+  votes     QuestionVote[]
+  viewsLog  QuestionView[]
+
+  followers Follows[] @relation("following") // people who follow this user
+  following Follows[] @relation("follower") // people this user is following
 
   username        String?
   displayUsername String?
@@ -30,14 +36,65 @@ model User {
 }
 
 model Question {
-  id        String    @id @default(cuid())
+  id        String         @id @default(cuid())
   authorId  String
   title     String
   excerpt   String
   content   String
   tags      String[] // Postgres can store array types
-  createdAt DateTime  @default(now())
-  author    User      @relation(fields: [authorId], references: [id])
+  createdAt DateTime       @default(now())
+  author    User           @relation(fields: [authorId], references: [id])
+  comments  Comment[]
+  votes     QuestionVote[]
+  viewsLog  QuestionView[]
+}
+
+model QuestionVote {
+  id         String   @id @default(cuid())
+  userId     String
+  questionId String
+  value      Int // 1 for upvote, -1 for downvote
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId]) // Prevents duplicate voting
+}
+
+model QuestionView {
+  id         String   @id @default(cuid())
+  questionId String
+  userId     String
+  createdAt  DateTime @default(now())
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, userId]) // 👈 one view per user per question
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  content    String
+  userId     String
+  questionId String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([userId, questionId])
+}
+
+model Follows {
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  follower    User     @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId]) // Composite Primary Key
+  @@index([followerId, followingId])
 }
 
 model Session {

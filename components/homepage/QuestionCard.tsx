@@ -20,7 +20,7 @@ export default function QuestionCard({ question }: QuestionCardProps) {
                             <button className="text-muted-foreground hover:text-foreground">
                                 <ArrowUp className="size-5" />
                             </button>
-                            <span
+                            {/* <span
                                 className={cn(
                                     "font-medium text-sm py-1",
                                     question.votes > 0
@@ -31,18 +31,18 @@ export default function QuestionCard({ question }: QuestionCardProps) {
                                 )}
                             >
                                 {question.votes}
-                            </span>
+                            </span> */}
                             <button className="text-muted-foreground hover:text-foreground">
                                 <ArrowDown className="size-5" />
                             </button>
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground text-xs">
                             <MessageSquare className="size-4 " />
-                            <span>{question.answers}</span>
+                            {/* <span>{question.answers}</span> */}
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground text-xs">
                             <Eye className="size-4" />
-                            <span>{question.views}</span>
+                            {/* <span>{question.views}</span> */}
                         </div>
                     </div>
 
@@ -72,15 +72,15 @@ export default function QuestionCard({ question }: QuestionCardProps) {
                             <div className="flex sm:hidden items-cente gap-4 text-muted-foreground text-sm">
                                 <div className="flex items-center gap-1 ">
                                     <ArrowUp className="size-4"/>
-                                    <span>{question.votes}</span>
+                                    {/* <span>{question.votes}</span> */}
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <MessageSquare className="size-4" />
-                                    {question.answers}
+                                    {/* {question.answers} */}
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <Eye  className="size-4"/>
-                                    {question.views}
+                                    {/* {question.views} */}
                                 </div>
                             </div>
                             <div className="hidden sm:flex items-center gap-2 ml-auto">

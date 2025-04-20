@@ -16,9 +16,6 @@ export interface Question {
     excerpt: string;
     content: string;
     tags: string[];
-    votes: number;
-    answers: number;
-    views: number;
     createdAt: Date;
     author: {
         id: string;
@@ -26,15 +23,6 @@ export interface Question {
         name: string;
         image?: string | null;
     };
-    comments: Comment[];
-    related?: {
-        id: string;
-        title: string;
-    }[];
-    hotQuestions?: {
-        id: string;
-        title: string;
-    }[];
 }
 
 export interface Comment {

@@ -1,11 +1,9 @@
+import { getQuestion } from "@/actions/question.action";
 import QuestionCard from "@/components/homepage/QuestionCard";
 import Sidebar from "@/components/homepage/Sidebar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { MessageSquare, Search, TrendingUp } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -19,29 +17,7 @@ export default async function Home() {
         redirect("/login");
     }
 
-    const getQuestions = await prisma.question.findMany({
-        include: {
-            author: {
-                select: {
-                    id: true,
-                    username: true,
-                    name: true,
-                    image: true,
-                },
-            },
-            comments: {
-                include: {
-                    author: {
-                        select: {
-                            id: true,
-                            username: true,
-                            name: true,
-                        },
-                    },
-                },
-            },
-        },
-    });
+    const questions = await getQuestion();
 
     return (
         <div className="container mx-auto py-6 px-4 md:px-0">
@@ -80,7 +56,7 @@ export default async function Home() {
                         </Button>
                     </div>
 
-                    {getQuestions.map((question) => (
+                    {questions?.map((question) => (
                         <QuestionCard key={question.id} question={question} />
                     ))}
                 </div>

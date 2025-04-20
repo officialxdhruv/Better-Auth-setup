@@ -4,7 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { Toaster } from "@/components/ui/sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
+import ToasterProvider from "@/components/ToasterProvider";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -42,7 +43,7 @@ export default function RootLayout({
                         <main className="flex-1">{children}</main>
                         <Footer />
                     </div>
-                    <Toaster richColors />
+                    <ToasterProvider />
                 </ThemeProvider>
             </body>
         </html>
