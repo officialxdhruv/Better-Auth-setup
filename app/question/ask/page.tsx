@@ -145,6 +145,7 @@ export default function page() {
                                     <Textarea
                                         id="content"
                                         name="content"
+                                        className="min-h-50"
                                         value={state.content}
                                         onChange={handleChange}
                                         placeholder="Include all the information someone would need to answer your question"

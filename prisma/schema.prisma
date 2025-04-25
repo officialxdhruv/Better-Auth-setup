@@ -29,6 +29,8 @@ model User {
 
   username        String?
   displayUsername String?
+  Answer          Answer[]
+  AnswerVote      AnswerVote[]
 
   @@unique([email])
   @@unique([username])
@@ -47,6 +49,7 @@ model Question {
   comments  Comment[]
   votes     QuestionVote[]
   viewsLog  QuestionView[]
+  Answer    Answer[]
 }
 
 model QuestionVote {
@@ -74,16 +77,52 @@ model QuestionView {
   @@unique([questionId, userId]) // 👈 one view per user per question
 }
 
+model Answer {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authorId   String
+  questionId String
+
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  comments Comment[]    @relation("AnswerComments")
+  votes    AnswerVote[] // Optional: if you want upvote/downvote on answers
+
+  @@index([authorId])
+  @@index([questionId])
+}
+
+model AnswerVote {
+  id        String   @id @default(cuid())
+  value     Int // 1 for upvote, -1 for downvote
+  createdAt DateTime @default(now())
+
+  userId   String
+  answerId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answer Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, answerId]) // Prevents duplicate votes
+}
+
 model Comment {
-  id         String   @id @default(cuid())
+  id         String  @id @default(cuid())
   content    String
   userId     String
-  questionId String
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String?
+  answerId   String?
 
-  @@index([userId, questionId])
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question  Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answer    Answer?   @relation("AnswerComments", fields: [answerId], references: [id], onDelete: Cascade)
+
+  @@index([userId, questionId, answerId])
 }
 
 model Follows {

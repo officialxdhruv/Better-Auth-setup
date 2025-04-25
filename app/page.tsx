@@ -19,6 +19,8 @@ export default async function Home() {
 
     const questions = await getQuestion();
 
+    
+
     return (
         <div className="container mx-auto py-6 px-4 md:px-0">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
@@ -30,7 +32,7 @@ export default async function Home() {
                         Where developers learn, share, & build their careers
                     </p>
                 </div>
-                <Link href="/questions/ask">
+                <Link href="/question/ask">
                     <Button>Ask Question</Button>
                 </Link>
             </div>

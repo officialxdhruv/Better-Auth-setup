@@ -4,7 +4,6 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { useIsMobile } from "@/hooks/use-mobile";
 import ToasterProvider from "@/components/ToasterProvider";
 
 const geistSans = Geist({

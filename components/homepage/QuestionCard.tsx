@@ -1,57 +1,46 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import { Badge } from "../ui/badge";
-import { Question } from "@/lib/types";
 import { Card, CardContent } from "../ui/card";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowDown, ArrowUp, Eye, MessageSquare } from "lucide-react";
+import { Eye, MessageSquare } from "lucide-react";
+import { getQuestion } from "@/actions/question.action";
+import VotePanel from "./question/VotePanel";
 
-interface QuestionCardProps {
-    question: Question;
-}
+type QuestionCardData = Awaited<ReturnType<typeof getQuestion>>[0];
+
+type QuestionCardProps = {
+    question: QuestionCardData;
+};
 
 export default function QuestionCard({ question }: QuestionCardProps) {
     return (
-        <Card>
+        <Card className="hover:border-primary/20 transition-colors">
             <CardContent>
                 <div className="flex gap-4">
                     <div className="hidden sm:flex flex-col items-center gap-2">
                         <div className="flex flex-col items-center">
-                            <button className="text-muted-foreground hover:text-foreground">
-                                <ArrowUp className="size-5" />
-                            </button>
-                            {/* <span
-                                className={cn(
-                                    "font-medium text-sm py-1",
-                                    question.votes > 0
-                                        ? "text-green-600"
-                                        : question.votes < 0
-                                          ? "text-red-600"
-                                          : ""
-                                )}
-                            >
-                                {question.votes}
-                            </span> */}
-                            <button className="text-muted-foreground hover:text-foreground">
-                                <ArrowDown className="size-5" />
-                            </button>
+                            <VotePanel
+                                questionId={question.id}
+                                initialVotes={question.votes.length}
+                                userVote={question.userVote}
+                            />
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground text-xs">
                             <MessageSquare className="size-4 " />
-                            {/* <span>{question.answers}</span> */}
+                            <span>{question.answerCount}</span>
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground text-xs">
                             <Eye className="size-4" />
-                            {/* <span>{question.views}</span> */}
+                            <span>{question.viewCount}</span>
                         </div>
                     </div>
 
                     <div className="flex-1">
                         <Link
-                            href={"/"}
-                            className="text-lg font-medium hover:text-primary"
+                            href={`/question/${question.id}`}
+                            className="text-lg font-medium hover:text-primary text-green-600"
                         >
-                            {question.title}
+                            <p>{question.title}</p>
                         </Link>
                         <p className="text-muted-foreground mt-1 line-clamp-1">
                             {question.excerpt}
@@ -70,22 +59,23 @@ export default function QuestionCard({ question }: QuestionCardProps) {
 
                         <div className="flex justify-between mt-4">
                             <div className="flex sm:hidden items-cente gap-4 text-muted-foreground text-sm">
-                                <div className="flex items-center gap-1 ">
-                                    <ArrowUp className="size-4"/>
-                                    {/* <span>{question.votes}</span> */}
-                                </div>
+                                <VotePanel
+                                    questionId={question.id}
+                                    initialVotes={question.votes.length}
+                                    userVote={question.userVote}
+                                />
                                 <div className="flex items-center gap-1">
                                     <MessageSquare className="size-4" />
-                                    {/* {question.answers} */}
+                                    {question.answerCount}
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Eye  className="size-4"/>
-                                    {/* {question.views} */}
+                                    <Eye className="size-4" />
+                                    {question.viewCount}
                                 </div>
                             </div>
                             <div className="hidden sm:flex items-center gap-2 ml-auto">
                                 <Link
-                                    href={`/`}
+                                    href={`users/${question.authorId}`}
                                     className="flex items-center gap-2"
                                 >
                                     <img
