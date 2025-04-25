@@ -37,6 +37,7 @@ function Badge({
   return (
     <Comp
       data-slot="badge"
+      key={Math.random()}
       className={cn(badgeVariants({ variant }), className)}
       {...props}
     />
