@@ -3,6 +3,7 @@ import {
     countTotalVotes,
     existingVote,
     getQuestionById,
+    voteOnQuestion,
 } from "@/actions/question.action";
 import AnswerSection from "@/components/homepage/question/AnswerSection";
 import CommentSection from "@/components/homepage/question/CommentSection";
@@ -57,9 +58,11 @@ export default async function Page({
                     <div className="flex gap-4">
                         <div className="hidden sm:flex flex-col items-center gap-2">
                             <VotePanel
-                                questionId={question.id}
+                                type="question"
+                                id={question.id}
                                 initialVotes={totalVotes}
                                 userVote={isUserVote.vote?.value || null}
+                                voteAction={voteOnQuestion}
                             />
                             <div className="flex flex-col items-center gap-4 text-muted-foreground mt-2">
                                 <button className="hover:text-foreground">
@@ -94,9 +97,11 @@ export default async function Page({
 
                             <div className="flex sm:hidden items-center gap-4 mt-4 text-muted-foreground">
                                 <VotePanel
-                                    questionId={question.id}
+                                    type="question"
+                                    id={question.id}
                                     initialVotes={totalVotes}
                                     userVote={isUserVote.vote?.value || null}
+                                    voteAction={voteOnQuestion}
                                 />
                                 <button className="hover:text-foreground">
                                     <MessageSquare className="size-4" />

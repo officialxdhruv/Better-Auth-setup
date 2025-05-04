@@ -1,27 +1,32 @@
-// components/question/VotePanel.tsx
 'use client';
 
 import { useTransition, useState } from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
-import { voteOnQuestion } from '@/actions/question.action';
 
+type VoteTarget = 'question' | 'answer';
+
+interface VotePanelProps {
+  type: VoteTarget;
+  id: string;
+  initialVotes: number;
+  userVote: number | null;
+  voteAction: (id: string, value: 1 | -1) => Promise<{ success: boolean }>;
+}
 
 export default function VotePanel({
-  questionId,
+  type,
+  id,
   initialVotes,
   userVote,
-}: {
-  questionId: string;
-  initialVotes: number;
-  userVote: number | null; // 1 (up), -1 (down), null (no vote)
-}) {
+  voteAction,
+}: VotePanelProps) {
   const [votes, setVotes] = useState(initialVotes);
   const [currentVote, setCurrentVote] = useState(userVote);
   const [isPending, startTransition] = useTransition();
 
   const handleVote = (value: 1 | -1) => {
     startTransition(() => {
-      voteOnQuestion(questionId, value).then((res) => {
+      voteAction(id, value).then((res) => {
         if (res.success) {
           if (currentVote === value) {
             setCurrentVote(null);
@@ -36,12 +41,10 @@ export default function VotePanel({
   };
 
   return (
-    <div className="flex md:flex-col  items-center gap-3 md:gap-2 text-muted-foreground">
+    <div className="flex md:flex-col items-center gap-3 md:gap-2 text-muted-foreground">
       <button
         onClick={() => handleVote(1)}
-        className={`hover:text-foreground ${
-          currentVote === 1 ? 'text-foreground' : ''
-        }`}
+        className={`hover:text-foreground ${currentVote === 1 ? 'text-foreground' : ''}`}
         disabled={isPending}
       >
         <ArrowUp className="size-5 md:size-6" />
@@ -49,9 +52,7 @@ export default function VotePanel({
       <span className="font-medium md:text-lg py-1">{votes}</span>
       <button
         onClick={() => handleVote(-1)}
-        className={`hover:text-foreground ${
-          currentVote === -1 ? 'text-foreground' : ''
-        }`}
+        className={`hover:text-foreground ${currentVote === -1 ? 'text-foreground' : ''}`}
         disabled={isPending}
       >
         <ArrowDown className="size-5 md:size-6" />

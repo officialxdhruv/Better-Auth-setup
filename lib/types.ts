@@ -21,4 +21,6 @@ export type QuestionType = QuestionsListType[0];
 
 type QuestionsByid = Awaited<ReturnType<typeof getQuestionById>>["question"];
 
-export type AnswerType = NonNullable<QuestionsByid>["Answer"];
+export type AnswersType = NonNullable<QuestionsByid>["Answer"];
+
+export type AnswerType = AnswersType[0];

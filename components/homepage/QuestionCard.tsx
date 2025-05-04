@@ -3,7 +3,7 @@ import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { Eye, MessageSquare } from "lucide-react";
-import { countTotalVotes, existingVote } from "@/actions/question.action";
+import { countTotalVotes, existingVote, voteOnQuestion } from "@/actions/question.action";
 import VotePanel from "./question/VotePanel";
 import { QuestionType } from "@/lib/types";
 
@@ -14,17 +14,20 @@ export default async function QuestionCard({
 }) {
     const isUserVote = await existingVote(question.id);
     const totalVotes = await countTotalVotes(question.id);
+    
     return (
         <Card className="hover:border-primary/20 transition-colors">
             <CardContent>
                 <div className="flex gap-4">
                     <div className="hidden sm:flex flex-col items-center gap-2">
                         <div className="flex flex-col items-center">
-                            <VotePanel
-                                questionId={question.id}
-                                initialVotes={totalVotes}
-                                userVote={isUserVote.vote?.value || null}
-                            />
+                                <VotePanel
+                                    type="question"
+                                    id={question.id}
+                                    initialVotes={totalVotes}
+                                    userVote={isUserVote.vote?.value || null}
+                                    voteAction={voteOnQuestion}
+                                />
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground text-xs">
                             <MessageSquare className="size-4 " />
@@ -61,9 +64,11 @@ export default async function QuestionCard({
                         <div className="flex justify-between mt-4">
                             <div className="flex sm:hidden items-cente gap-4 text-muted-foreground text-sm">
                                 <VotePanel
-                                    questionId={question.id}
+                                    type="question"
+                                    id={question.id}
                                     initialVotes={totalVotes}
                                     userVote={isUserVote.vote?.value || null}
+                                    voteAction={voteOnQuestion}
                                 />
                                 <div className="flex items-center gap-1">
                                     <MessageSquare className="size-4" />
