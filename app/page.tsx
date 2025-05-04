@@ -1,3 +1,4 @@
+import { SignOut } from "@/components/auth/AuthButtons";
 import Sidebar from "@/components/homepage/Sidebar";
 import Questions from "@/components/Questions";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ export default async function Home({
     if (!session) {
         redirect("/login");
     }
-    
+
     const page = parseInt(((await searchParams).page as string) || "1");
 
     return (

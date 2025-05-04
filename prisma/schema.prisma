@@ -9,15 +9,21 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  id              String   @id @default(uuid())
+  name            String
+  email           String
+  emailVerified   Boolean
+  image           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  username        String?
+  displayUsername String?
+  bio             String?
+  location        String?
+  website         String?
+
+  sessions Session[]
+  accounts Account[]
 
   questions Question[]
   comments  Comment[]
@@ -27,10 +33,8 @@ model User {
   followers Follows[] @relation("following") // people who follow this user
   following Follows[] @relation("follower") // people this user is following
 
-  username        String?
-  displayUsername String?
-  Answer          Answer[]
-  AnswerVote      AnswerVote[]
+  answers     Answer[]
+  answerVotes AnswerVote[]
 
   @@unique([email])
   @@unique([username])
@@ -132,7 +136,7 @@ model Follows {
   follower    User     @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
   following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
 
-  @@id([followerId, followingId]) // Composite Primary Key
+  @@unique([followerId, followingId]) // Composite Primary Key
   @@index([followerId, followingId])
 }
 

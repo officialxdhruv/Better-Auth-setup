@@ -80,7 +80,7 @@ export default async function Answer({ answer }: { answer: AnswerType }) {
                             </Link>
                             <div>
                                 <Link href={`/users/${answer.authorId}`}>
-                                    Johen
+                                {answer.author.name}
                                 </Link>
                                 <p className="text-xs text-muted-foreground">
                                     asked{" "}

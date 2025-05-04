@@ -1,23 +1,20 @@
+import { getAnswersByUserId } from "@/actions/answer.action";
 import { getQuestionsByUserId } from "@/actions/question.action";
-import { getUserProfile } from "@/actions/userprofile.action";
+import { getUserProfileById, isFollowing } from "@/actions/userprofile.action";
+import EditProfile from "@/components/EditProfile";
 import QuestionCard from "@/components/homepage/QuestionCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format, formatDistanceToNow } from "date-fns";
 import {
     Calendar,
-    Github,
+    Lightbulb,
     Link2,
     MapPin,
-    ThumbsUp,
-    Twitter,
+    MessageCircleQuestionIcon,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -27,257 +24,168 @@ export default async function Page({
     params: Promise<{ userId: string }>;
 }) {
     const { userId } = await params;
-    const profile = await getUserProfile(userId);
+    const user = await getUserProfileById(userId);
 
-    if (!profile) {
+    if (!user) {
         return <div className="p-4 text-center">User not found</div>;
     }
 
     const { questions } = await getQuestionsByUserId(userId);
+    const answers = await getAnswersByUserId(userId);
+    const isCurrentUserFollowing = await isFollowing(userId);
+
+    const formattedDate = format(new Date(user.createdAt), "MMMM yyyy");
 
     return (
         <div className="container mx-auto px-4 md:px-0 py-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="md:col-span-1 space-y-4">
                     <Card>
-                        <CardHeader className="flex flex-col items-center justify-center">
-                            <Avatar className="size-20 ring-2 ring-green-600">
-                                <AvatarImage
-                                    src={
-                                        profile.user.image || "/placeholder.svg"
-                                    }
-                                />
-                                <AvatarFallback>
-                                    {profile.user.name?.charAt(0) || "U"}
-                                </AvatarFallback>
-                            </Avatar>
-                            <CardTitle className="text-3xl">
-                                {profile.user.name}
-                            </CardTitle>
-                            <CardDescription className="text-lg">
-                                @{profile.user.username}
-                            </CardDescription>
-                        </CardHeader>
                         <CardContent>
-                            <div className="flex items-center justify-center gap-3">
-                                <Button variant="outline" className="w-20">
-                                    Follow
-                                </Button>
-                                <Button variant="outline" className="w-20">
-                                    Message
-                                </Button>
-                            </div>
-                            <div className="mt-4 space-y-2 text-sm">
-                                <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                                    <MapPin className="size-4" />
-                                    <span>himachal pardash</span>
+                            <div className="flex flex-col items-center justify-center">
+                                <Avatar className="size-24 ring-4 ring-green-600">
+                                    <AvatarImage
+                                        src={user.image || "/avatar.png"}
+                                    />
+                                    <AvatarFallback>
+                                        {user.name.charAt(0)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <h1 className="mt-4 text-2xl font-bold">
+                                    {user.name}
+                                </h1>
+                                <p className="text-muted-foreground">
+                                    @{user.username}
+                                </p>
+                                <div className="w-full">
+                                    <Separator className="my-4" />
+                                    <div className="flex justify-between">
+                                        <div className="flex flex-col items-center justify-center">
+                                            <p className="font-semibold">
+                                                {user._count.following.toLocaleString()}
+                                            </p>
+                                            <p className="text-sm text-muted-foreground">
+                                                Following
+                                            </p>
+                                        </div>
+                                        <div className="flex flex-col items-center justify-center">
+                                            <div className="font-semibold">
+                                                {user._count.followers.toLocaleString()}
+                                            </div>
+                                            <div className="text-sm text-muted-foreground">
+                                                Followers
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <Separator className="my-4" />
                                 </div>
-                                <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                                    <Calendar className="size-4" />
-                                    <span>
-                                        {new Date(
-                                            profile.user.createdAt
-                                        ).toLocaleDateString()}
-                                    </span>
-                                </div>
-                                <div className="flex items-center justify-center gap-1">
-                                    <Link2 className="size-4" />
-                                    <a
-                                        href="https://blazecode.me"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        blazecode.me
-                                    </a>
-                                </div>
-                            </div>
 
-                            <div className="flex justify-center gap-2 mt-4">
-                                <a
-                                    href=""
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-muted-foreground hover:text-foreground"
-                                >
-                                    <Github className="size-5" />
-                                </a>
-                                <a
-                                    href=""
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-muted-foreground hover:text-foreground"
-                                >
-                                    <Twitter className="h-5 w-5" />
-                                </a>
+                                <div className="w-full space-y-2 text-sm">
+                                    <div className="flex  gap-2 items-center text-muted-foreground">
+                                        <MapPin className="size-4" />
+                                        <span>
+                                            {user.location || "No location"}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                        <Calendar className="size-4" />
+                                        <span>Joined {formattedDate}</span>
+                                    </div>
+                                    <div className="flex gap-2 items-center text-muted-foreground">
+                                        <Link2 className="size-4" />
+                                        {user.website ? (
+                                            <a
+                                                href={
+                                                    user.website.startsWith(
+                                                        "http"
+                                                    )
+                                                        ? user.website
+                                                        : `https://${user.website}`
+                                                }
+                                                className="hover:underline truncate"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {user.website}
+                                            </a>
+                                        ) : (
+                                            "No website"
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
+                    <EditProfile
+                        user={user}
+                        isFollowing={isCurrentUserFollowing}
+                    />
                 </div>
 
                 <div className="md:col-span-3">
-                    <Tabs defaultValue="profile">
-                        <TabsList className="mb-4">
-                            <TabsTrigger value="profile">Profile</TabsTrigger>
-                            <TabsTrigger value="activity">Activity</TabsTrigger>
-                            <TabsTrigger value="question">Question</TabsTrigger>
-                            <TabsTrigger value="answers">Answers</TabsTrigger>
+                    <Tabs defaultValue="questions" className="w-full">
+                        <TabsList className=" w-full">
+                            <TabsTrigger value="questions">
+                                <MessageCircleQuestionIcon className="size-4" />
+                                Question
+                            </TabsTrigger>
+                            <TabsTrigger value="answers">
+                                <Lightbulb className="size-4" />
+                                Answers
+                            </TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="profile">
+                        <TabsContent value="questions" className="mt-6">
                             <div className="space-y-6">
-                                <Card>
-                                    <CardContent>
-                                        <h2 className="text-xl font-semibold mb-2">
-                                            About
-                                        </h2>
-                                        <div className="prose max-w-none dark:prose-invert">
-                                            <p>
-                                                This user hasn't written an
-                                                about me yet.
-                                            </p>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                                <Card>
-                                    <CardContent>
-                                        <h2>Top Posts</h2>
-                                        <div className="space-y-4">
-                                            {profile.topQuestions.map(
-                                                (question) => (
-                                                    <div
-                                                        key={question.id}
-                                                        className="flex items-start gap-2"
-                                                    >
-                                                        <div>
-                                                            <Link
-                                                                href={`/question/${question.id}`}
-                                                            >
-                                                                {question.title}
-                                                            </Link>
-                                                            <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                                                                <div className="flex items-center gap-1">
-                                                                    <ThumbsUp className="size-3" />
-                                                                    <span>
-                                                                        {
-                                                                            question
-                                                                                .votes
-                                                                                .length
-                                                                        }
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        </TabsContent>
-                        <TabsContent value="activity">
-                            <div className="space-y-6">
-                                <Card>
-                                    <CardContent>
-                                        <h2 className="text-xl font-semibold mb-4">
-                                            Recent Activity
-                                        </h2>
-                                        <div className="space-y-4">
-                                            {profile.recentActivity.map(
-                                                (item) => (
-                                                    <div
-                                                        key={item.id}
-                                                        className="border-b pb-3 last:border-0"
-                                                    >
-                                                        <div className="flex items-start gap-2">
-                                                            <div
-                                                                className={`px-2 py-1 rounded text-xs font-medium ${
-                                                                    item.type ===
-                                                                    "question"
-                                                                        ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-                                                                        : item.type ===
-                                                                            "answer"
-                                                                          ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                                                                          : item.type ===
-                                                                              "comment"
-                                                                            ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300"
-                                                                            : "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300"
-                                                                }`}
-                                                            >
-                                                                {item.type ===
-                                                                "question"
-                                                                    ? "Q"
-                                                                    : item.type ===
-                                                                        "answer"
-                                                                      ? "A"
-                                                                      : item.type ===
-                                                                          "comment"
-                                                                        ? "C"
-                                                                        : "V"}
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-xs text-muted-foreground">
-                                                                    {item.type}{" "}
-                                                                    {new Date(
-                                                                        item.createdAt
-                                                                    ).toLocaleTimeString()}
-                                                                </div>
-                                                                <Link
-                                                                    href={`/question/${item.id}`}
-                                                                    className="text-sm font-medium hover:text-primary"
-                                                                >
-                                                                    {item.title}
-                                                                </Link>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        </TabsContent>
-                        <TabsContent value="question">
-                            <div className="space-y-4">
-                                {questions.map((question) => (
-                                    <QuestionCard
-                                        key={question.id}
-                                        question={question}
-                                    />
-                                ))}
-                            </div>
-                        </TabsContent>
-                        <TabsContent value="answers">
-                            <div className="space-y-4">
-                                {profile.allAnswers.map((answer) => (
-                                    <div
-                                        key={answer.id}
-                                        className="bg-card rounded-lg border shadow-sm p-4"
-                                    >
-                                        <Link
-                                            href={`/question/${answer.questionId}`}
-                                            className="text-lg font-medium hover:text-primary"
-                                        >
-                                            {answer.question.title}
-                                        </Link>
-                                        <div className="mt-2 prose max-w-none dark:prose-invert line-clamp-3">
-                                            <p>{answer.content}</p>
-                                        </div>
-                                        <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
-                                            <div className="flex items-center gap-1">
-                                                <ThumbsUp className="h-4 w-4" />
-                                                {/* <span>{answer.} votes</span> */}
-                                            </div>
-                                            <span>
-                                                Answered{" "}
-                                                {new Date(
-                                                    answer.createdAt
-                                                ).toLocaleDateString()}
-                                            </span>
-                                        </div>
+                                {(questions.length ?? 0) > 0 ? (
+                                    questions.map((question) => (
+                                        <QuestionCard
+                                            key={question.id}
+                                            question={question}
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        No posts yet
                                     </div>
-                                ))}
+                                )}
+                            </div>
+                        </TabsContent>
+
+                        <TabsContent value="answers" className="mt-6">
+                            <div className="space-y-6">
+                                {(answers.length ?? 0) > 0 ? (
+                                    answers.map((answer) => (
+                                        <Card key={answer.id}>
+                                            <CardContent>
+                                                <Link
+                                                    href={`/question/${answer.question.id}`}
+                                                    className="font-semibold text-green-600 hover:text-primary"
+                                                >
+                                                    {answer.question.title}
+                                                </Link>
+                                                <div className="mt-2 prose max-w-none dark:prose-invert line-clamp-3">
+                                                    <p>{answer.content}</p>
+                                                </div>
+                                                <div className="flex flex-row-reverse">
+                                                    <span className="mt-2 text-muted-foreground">
+                                                        asked {""}
+                                                        {formatDistanceToNow(
+                                                            new Date(
+                                                                answer.createdAt
+                                                            ),
+                                                            { addSuffix: true }
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        No posts yet
+                                    </div>
+                                )}
                             </div>
                         </TabsContent>
                     </Tabs>

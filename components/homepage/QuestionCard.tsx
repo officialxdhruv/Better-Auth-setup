@@ -3,7 +3,11 @@ import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { Eye, MessageSquare } from "lucide-react";
-import { countTotalVotes, existingVote, voteOnQuestion } from "@/actions/question.action";
+import {
+    countTotalVotes,
+    existingVote,
+    voteOnQuestion,
+} from "@/actions/question.action";
 import VotePanel from "./question/VotePanel";
 import { QuestionType } from "@/lib/types";
 
@@ -14,20 +18,20 @@ export default async function QuestionCard({
 }) {
     const isUserVote = await existingVote(question.id);
     const totalVotes = await countTotalVotes(question.id);
-    
+
     return (
         <Card className="hover:border-primary/20 transition-colors">
             <CardContent>
                 <div className="flex gap-4">
                     <div className="hidden sm:flex flex-col items-center gap-2">
                         <div className="flex flex-col items-center">
-                                <VotePanel
-                                    type="question"
-                                    id={question.id}
-                                    initialVotes={totalVotes}
-                                    userVote={isUserVote.vote?.value || null}
-                                    voteAction={voteOnQuestion}
-                                />
+                            <VotePanel
+                                type="question"
+                                id={question.id}
+                                initialVotes={totalVotes}
+                                userVote={isUserVote.vote?.value || null}
+                                voteAction={voteOnQuestion}
+                            />
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground text-xs">
                             <MessageSquare className="size-4 " />
@@ -42,7 +46,7 @@ export default async function QuestionCard({
                     <div className="flex-1">
                         <Link
                             href={`/question/${question.id}`}
-                            className="text-lg font-medium hover:text-primary text-green-600"
+                            className="text-lg font-bold hover:text-primary text-green-600"
                         >
                             <p>{question.title}</p>
                         </Link>
@@ -87,7 +91,7 @@ export default async function QuestionCard({
                                     <img
                                         src={
                                             question.author.image ||
-                                            "/placeholder.svg"
+                                            "/avatar.png"
                                         }
                                         alt={question.author.name}
                                         className="size-6 rounded-full"

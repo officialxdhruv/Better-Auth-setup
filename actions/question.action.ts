@@ -124,6 +124,7 @@ export async function getQuestionById(id: Question["id"]) {
                                 user: true,
                             },
                         },
+                        author: true,
                     },
                 },
             },

@@ -15,7 +15,7 @@ export default async function AnswerSection({
     return (
         <div className="mt-4">
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Answer</h2>
+                <h2 className="text-2xl font-semibold">Answer</h2>
                 <div className="flex gap-2">
                     <Button variant="outline">Highest Score</Button>
                     <Button variant="ghost">Newest</Button>

@@ -18,9 +18,8 @@ export function SignIn() {
     );
 }
 
-export function SignOut() {
+export function SignOut({ className }: { className?: string }) {
     const router = useRouter();
-
     return (
         <Button
             onClick={async () => {
@@ -32,6 +31,7 @@ export function SignOut() {
                     },
                 });
             }}
+            className={className}
         >
             Sign Out
         </Button>

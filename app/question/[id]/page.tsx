@@ -121,7 +121,9 @@ export default async function Page({
                                             href={`/users/${question.authorId}`}
                                         >
                                             <img
-                                                src="/placeholder.svg"
+                                                src={
+                                                    question.author.image || "/avatar.png"
+                                                }
                                                 className="size-8 rounded-full"
                                             />
                                         </Link>
@@ -129,7 +131,7 @@ export default async function Page({
                                             <Link
                                                 href={`/users/${question.authorId}`}
                                             >
-                                                Johen
+                                                {question.author.name}
                                             </Link>
                                             <p className="text-xs text-muted-foreground">
                                                 asked{" "}

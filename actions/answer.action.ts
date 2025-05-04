@@ -3,6 +3,33 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 
+export async function getAnswersByUserId(userId: string) {
+    try {
+        const answers = await prisma.answer.findMany({
+            where: { authorId : userId },
+            select: {
+                id: true,
+                content: true,
+                createdAt: true,
+                question: {
+                    select: {
+                        id: true,
+                        title: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        return answers;
+    } catch (error) {
+        console.error("Error fetching user's answers:", error);
+        return [];
+    }
+}
+
 /**
  * Fetches an existing vote by the user on a answer.
  */

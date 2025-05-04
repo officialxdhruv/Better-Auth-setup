@@ -37,6 +37,7 @@ export const loginEmail = validatedAction(LoginSchema, async (data) => {
     try {
         await auth.api.signInEmail({
             body: { email, password },
+            asResponse: true,
         });
         return { success: true };
     } catch (error) {

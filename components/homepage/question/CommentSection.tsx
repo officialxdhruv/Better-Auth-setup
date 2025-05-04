@@ -2,7 +2,7 @@
 import { createComment } from "@/actions/question.action";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { CommentType } from "@/lib/types";
+import { CommentsType } from "@/lib/types";
 import { withAuthClient, WithAuthProps } from "@/lib/withAuthClient";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 type CommentSectionProps = {
     questionId?: string;
     answerId?: string;
-    comments: CommentType;
+    comments: CommentsType;
 } & WithAuthProps;
 
 function CommentSection({
@@ -25,7 +25,7 @@ function CommentSection({
     const [showAddComment, setShowAddComment] = useState(false);
     const [isPosting, setIsPosting] = useState(false);
     const [content, setContent] = useState("");
-    const [localComments, setLocalComments] = useState<CommentType>(comments);
+    const [localComments, setLocalComments] = useState<CommentsType>(comments);
     const handleSubmit = async () => {
         if (!content.trim()) {
             toast.error("Comment cannot be empty.");

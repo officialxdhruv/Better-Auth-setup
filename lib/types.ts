@@ -1,4 +1,5 @@
 import { getQuestionById, getQuestions } from "@/actions/question.action";
+import { getUserProfileById } from "@/actions/userprofile.action";
 import { z } from "zod";
 
 export const SignUpSchema = z.object({
@@ -21,6 +22,12 @@ export type QuestionType = QuestionsListType[0];
 
 type QuestionsByid = Awaited<ReturnType<typeof getQuestionById>>["question"];
 
+export type UserProfileType = NonNullable<
+    Awaited<ReturnType<typeof getUserProfileById>>
+>;
+
 export type AnswersType = NonNullable<QuestionsByid>["Answer"];
+export type CommentsType = NonNullable<QuestionsByid>["comments"];
 
 export type AnswerType = AnswersType[0];
+export type CommentType = CommentsType[0];
