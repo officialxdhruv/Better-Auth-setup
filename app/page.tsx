@@ -1,6 +1,5 @@
-import { getQuestion } from "@/actions/question.action";
-import QuestionCard from "@/components/homepage/QuestionCard";
 import Sidebar from "@/components/homepage/Sidebar";
+import Questions from "@/components/Questions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/lib/auth";
@@ -9,17 +8,20 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export default async function Home() {
+export default async function Home({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
+
     if (!session) {
         redirect("/login");
     }
-
-    const questions = await getQuestion();
-
     
+    const page = parseInt(((await searchParams).page as string) || "1");
 
     return (
         <div className="container mx-auto py-6 px-4 md:px-0">
@@ -58,9 +60,7 @@ export default async function Home() {
                         </Button>
                     </div>
 
-                    {questions?.map((question) => (
-                        <QuestionCard key={question.id} question={question} />
-                    ))}
+                    <Questions page={page} />
                 </div>
             </div>
         </div>

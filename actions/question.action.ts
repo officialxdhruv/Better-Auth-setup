@@ -4,71 +4,6 @@ import { auth } from "@/lib/auth";
 import { Question } from "@/lib/generated/prisma";
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
-export async function getQuestion() {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-    if (!session?.user) return [];
-
-    const userId = session.user.id;
-
-    try {
-        const questions = await prisma.question.findMany({
-            include: {
-                author: {
-                    select: {
-                        id: true,
-                        username: true,
-                        name: true,
-                        image: true,
-                    },
-                },
-                viewsLog: {
-                    select: {
-                        id: true,
-                    },
-                },
-                votes: {
-                    select: {
-                        value: true,
-                        userId: true,
-                    },
-                },
-                _count: {
-                    select: {
-                        Answer: true,
-                    },
-                },
-            },
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
-
-        const questionsWithCounts = questions.map((q) => {
-            const upvotes = q.votes.filter((vote) => vote.value === 1).length;
-            const downvotes = q.votes.filter((vote) => vote.value === -1).length;
-
-            const vote = q.votes.find((v) => v.userId === userId);
-            const userVote = vote?.value ?? null;
-
-            return {
-                ...q,
-                viewCount: q.viewsLog.length,
-                upvotes,
-                downvotes,
-                answerCount: q._count.Answer,
-                excerpt: q.excerpt,
-                userVote,
-            };
-        });
-
-        return questionsWithCounts;
-    } catch (error) {
-        console.error("Error in getting questions:", error);
-        return [];
-    }
-}
 
 export async function createQuestion(
     title: string,
@@ -103,12 +38,67 @@ export async function createQuestion(
     }
 }
 
+export async function getQuestions({ page = 1, pageSize = 10 } = {}) {
+    const skip = (page - 1) * pageSize;
+
+    try {
+        const questions = await prisma.question.findMany({
+            skip,
+            take: pageSize,
+            include: {
+                author: true,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        const totalCount = await prisma.question.count();
+
+        return {
+            questions,
+            totalCount,
+            totalPages: Math.ceil(totalCount / pageSize),
+            currentPage: page,
+        };
+    } catch (error) {
+        console.error("Error in getting questions:", error);
+        return {
+            questions: [],
+            totalCount: 0,
+            totalPages: 0,
+            currentPage: page,
+        };
+    }
+}
+
+export async function getQuestionsByUserId(userId: string) {
+    try {
+        const questions = await prisma.question.findMany({
+            where: { authorId: userId },
+            orderBy: { createdAt: "desc" },
+            include: {
+                author: true,
+            },
+        });
+
+        return { success: true, questions };
+    } catch (error) {
+        console.error("Error fetching user questions:", error);
+        return {
+            success: false,
+            message: "Failed to fetch questions",
+            questions: [],
+        };
+    }
+}
+
 export async function getQuestionById(id: Question["id"]) {
     const session = await auth.api.getSession({
         headers: await headers(),
     });
     if (!session?.user) return { error: "unauthorized user" };
-    const userId = session.user.id;
+
     try {
         const question = await prisma.question.findUnique({
             where: { id },
@@ -126,23 +116,12 @@ export async function getQuestionById(id: Question["id"]) {
                         createdAt: "desc",
                     },
                 },
-                author: {
-                    select: {
-                        id: true,
-                        name: true,
-                        username: true,
-                    },
-                },
+                author: true,
                 Answer: {
                     include: {
                         comments: {
                             include: {
-                                user: {
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                    },
-                                },
+                                user: true,
                             },
                         },
                     },
@@ -158,46 +137,17 @@ export async function getQuestionById(id: Question["id"]) {
             where: { questionId: id },
         });
 
-        // Fetch total upvotes and downvotes
-        const upvotes = await prisma.questionVote.count({
-            where: {
-                questionId: id,
-                value: 1, // upvotes
-            },
-        });
-
-        const downvotes = await prisma.questionVote.count({
-            where: {
-                questionId: id,
-                value: -1, // downvotes
-            },
-        });
-
-        // Fetch the user's vote, if exists
-        const userVote = userId
-            ? await prisma.questionVote.findUnique({
-                  where: {
-                      userId_questionId: {
-                          userId,
-                          questionId: id,
-                      },
-                  },
-              })
-            : null;
-
         return {
             success: true,
             question,
-            upvotes,
-            downvotes,
             viewCount,
-            userVote: userVote ? userVote.value : null,
         };
     } catch (error) {
         console.error("Error fetching question:", error);
         return { success: false };
     }
 }
+
 export async function createComment(
     content: string,
     questionId?: string,
@@ -288,6 +238,46 @@ export async function addAnswer(questionId: string, content: string) {
     }
 }
 
+/**
+ * Fetches an existing vote by the user on a question.
+ */
+async function findVote(userId: string, questionId: string) {
+    return prisma.questionVote.findUnique({
+        where: {
+            userId_questionId: {
+                userId,
+                questionId,
+            },
+        },
+    });
+}
+
+/**
+ * Checks if the current user has voted on the given question.
+ */
+export async function existingVote(questionId: string) {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session?.user) {
+        return { success: false, message: "Unauthorized user" };
+    }
+
+    const userId = session.user.id;
+
+    try {
+        const vote = await findVote(userId, questionId);
+        return { success: true, vote };
+    } catch (error) {
+        console.error("Error checking vote:", error);
+        return { success: false, message: "Something went wrong" };
+    }
+}
+
+/**
+ * Casts, toggles, or updates a vote on a question.
+ */
 export async function voteOnQuestion(questionId: string, value: 1 | -1) {
     const session = await auth.api.getSession({
         headers: await headers(),
@@ -300,14 +290,7 @@ export async function voteOnQuestion(questionId: string, value: 1 | -1) {
     const userId = session.user.id;
 
     try {
-        const existingVote = await prisma.questionVote.findUnique({
-            where: {
-                userId_questionId: {
-                    userId,
-                    questionId,
-                },
-            },
-        });
+        const existingVote = await findVote(userId, questionId);
 
         if (existingVote) {
             if (existingVote.value === value) {
@@ -350,5 +333,53 @@ export async function voteOnQuestion(questionId: string, value: 1 | -1) {
     } catch (error) {
         console.error("Error voting on question:", error);
         return { success: false, message: "Failed to vote" };
+    }
+}
+
+/**
+ * Calculates the total vote score for a question.
+ * @param questionId The ID of the question.
+ * @returns The total vote score (sum of upvotes and downvotes).
+ */
+export async function countTotalVotes(questionId: string): Promise<number> {
+    try {
+        const result = await prisma.questionVote.aggregate({
+            where: { questionId },
+            _sum: {
+                value: true,
+            },
+        });
+
+        return result._sum.value ?? 0;
+    } catch (error) {
+        console.error("Error counting votes:", error);
+        return 0;
+    }
+}
+
+/**
+ * Gets the total upvotes, downvotes, and net score for a question.
+ * @param questionId The ID of the question.
+ * @returns An object with upvotes, downvotes, and total score.
+ */
+export async function getVoteBreakdown(questionId: string): Promise<{
+    upvotes: number;
+    downvotes: number;
+    totalScore: number;
+}> {
+    try {
+        const votes = await prisma.questionVote.findMany({
+            where: { questionId },
+            select: { value: true },
+        });
+
+        const upvotes = votes.filter((v) => v.value === 1).length;
+        const downvotes = votes.filter((v) => v.value === -1).length;
+        const totalScore = upvotes - downvotes;
+
+        return { upvotes, downvotes, totalScore };
+    } catch (error) {
+        console.error("Error fetching vote breakdown:", error);
+        return { upvotes: 0, downvotes: 0, totalScore: 0 };
     }
 }

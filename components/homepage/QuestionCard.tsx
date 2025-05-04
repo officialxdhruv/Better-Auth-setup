@@ -3,16 +3,17 @@ import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { Eye, MessageSquare } from "lucide-react";
-import { getQuestion } from "@/actions/question.action";
+import { countTotalVotes, existingVote } from "@/actions/question.action";
 import VotePanel from "./question/VotePanel";
+import { QuestionType } from "@/lib/types";
 
-type QuestionCardData = Awaited<ReturnType<typeof getQuestion>>[0];
-
-type QuestionCardProps = {
-    question: QuestionCardData;
-};
-
-export default function QuestionCard({ question }: QuestionCardProps) {
+export default async function QuestionCard({
+    question,
+}: {
+    question: QuestionType;
+}) {
+    const isUserVote = await existingVote(question.id);
+    const totalVotes = await countTotalVotes(question.id);
     return (
         <Card className="hover:border-primary/20 transition-colors">
             <CardContent>
@@ -21,17 +22,17 @@ export default function QuestionCard({ question }: QuestionCardProps) {
                         <div className="flex flex-col items-center">
                             <VotePanel
                                 questionId={question.id}
-                                initialVotes={question.votes.length}
-                                userVote={question.userVote}
+                                initialVotes={totalVotes}
+                                userVote={isUserVote.vote?.value || null}
                             />
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground text-xs">
                             <MessageSquare className="size-4 " />
-                            <span>{question.answerCount}</span>
+                            {/* <span>{question.answerCount}</span> */}
                         </div>
                         <div className="flex items-center gap-1 text-muted-foreground text-xs">
                             <Eye className="size-4" />
-                            <span>{question.viewCount}</span>
+                            {/* <span>{question.viewCount}</span> */}
                         </div>
                     </div>
 
@@ -61,16 +62,16 @@ export default function QuestionCard({ question }: QuestionCardProps) {
                             <div className="flex sm:hidden items-cente gap-4 text-muted-foreground text-sm">
                                 <VotePanel
                                     questionId={question.id}
-                                    initialVotes={question.votes.length}
-                                    userVote={question.userVote}
+                                    initialVotes={totalVotes}
+                                    userVote={isUserVote.vote?.value || null}
                                 />
                                 <div className="flex items-center gap-1">
                                     <MessageSquare className="size-4" />
-                                    {question.answerCount}
+                                    {/* {question.answerCount} */}
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <Eye className="size-4" />
-                                    {question.viewCount}
+                                    {/* {question.viewCount} */}
                                 </div>
                             </div>
                             <div className="hidden sm:flex items-center gap-2 ml-auto">

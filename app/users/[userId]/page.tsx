@@ -1,3 +1,4 @@
+import { getQuestionsByUserId } from "@/actions/question.action";
 import { getUserProfile } from "@/actions/userprofile.action";
 import QuestionCard from "@/components/homepage/QuestionCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,6 +33,8 @@ export default async function Page({
         return <div className="p-4 text-center">User not found</div>;
     }
 
+    const { questions } = await getQuestionsByUserId(userId);
+
     return (
         <div className="container mx-auto px-4 md:px-0 py-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -39,7 +42,11 @@ export default async function Page({
                     <Card>
                         <CardHeader className="flex flex-col items-center justify-center">
                             <Avatar className="size-20 ring-2 ring-green-600">
-                                <AvatarImage src="" />
+                                <AvatarImage
+                                    src={
+                                        profile.user.image || "/placeholder.svg"
+                                    }
+                                />
                                 <AvatarFallback>
                                     {profile.user.name?.charAt(0) || "U"}
                                 </AvatarFallback>
@@ -233,12 +240,12 @@ export default async function Page({
                         </TabsContent>
                         <TabsContent value="question">
                             <div className="space-y-4">
-                                {/* {profile.allQuestions.map((question) => (
-                                    // <QuestionCard
-                                    //     question={question}
-                                    //     key={question.id}
-                                    // />
-                                ))} */}
+                                {questions.map((question) => (
+                                    <QuestionCard
+                                        key={question.id}
+                                        question={question}
+                                    />
+                                ))}
                             </div>
                         </TabsContent>
                         <TabsContent value="answers">

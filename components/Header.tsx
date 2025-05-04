@@ -107,7 +107,7 @@ export default function Header() {
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem asChild>
-                                        <Link href="/users/johndoe">
+                                        <Link href={`users/${session.user.id}`}>
                                             Profile
                                         </Link>
                                     </DropdownMenuItem>

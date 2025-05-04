@@ -1,4 +1,9 @@
-import { addQuestionView, getQuestionById } from "@/actions/question.action";
+import {
+    addQuestionView,
+    countTotalVotes,
+    existingVote,
+    getQuestionById,
+} from "@/actions/question.action";
 import AnswerSection from "@/components/homepage/question/AnswerSection";
 import CommentSection from "@/components/homepage/question/CommentSection";
 import VotePanel from "@/components/homepage/question/VotePanel";
@@ -20,11 +25,13 @@ export default async function Page({
     addQuestionView(id).catch((err) => {
         console.error("Failed to add view:", err);
     });
-    const { question, downvotes, upvotes, viewCount, userVote } =
-        await getQuestionById(id);
+    const { question, viewCount } = await getQuestionById(id);
+
     if (!question) {
         return <div>not found</div>;
     }
+    const isUserVote = await existingVote(question.id);
+    const totalVotes = await countTotalVotes(question.id);
     return (
         <div className="container mx-auto py-6 px-4 md:px-0">
             <div className="mb-8">
@@ -51,8 +58,8 @@ export default async function Page({
                         <div className="hidden sm:flex flex-col items-center gap-2">
                             <VotePanel
                                 questionId={question.id}
-                                initialVotes={upvotes}
-                                userVote={userVote}
+                                initialVotes={totalVotes}
+                                userVote={isUserVote.vote?.value || null}
                             />
                             <div className="flex flex-col items-center gap-4 text-muted-foreground mt-2">
                                 <button className="hover:text-foreground">
@@ -88,8 +95,8 @@ export default async function Page({
                             <div className="flex sm:hidden items-center gap-4 mt-4 text-muted-foreground">
                                 <VotePanel
                                     questionId={question.id}
-                                    initialVotes={upvotes}
-                                    userVote={userVote}
+                                    initialVotes={totalVotes}
+                                    userVote={isUserVote.vote?.value || null}
                                 />
                                 <button className="hover:text-foreground">
                                     <MessageSquare className="size-4" />
@@ -143,7 +150,7 @@ export default async function Page({
                     <Separator className="border-4" />
                     <AnswerSection
                         questionId={question.id}
-                        answers={question?.Answer}
+                        answers={question.Answer}
                     />
                 </div>
             </div>

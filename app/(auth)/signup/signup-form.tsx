@@ -26,6 +26,7 @@ export default function SignUpForm() {
         {
             error: "",
             name: "",
+            username : "",
             email: "",
             passoword: "",
         }
@@ -80,11 +81,22 @@ export default function SignUpForm() {
                             />
                         </div>
                         <div className="grid gap-3">
+                            <Label htmlFor="username">Username</Label>
+                            <Input
+                                id="username"
+                                name="username"
+                                type="text"
+                                placeholder="John_Doe"
+                                defaultValue={state.username}
+                                required
+                            />
+                        </div>
+                        <div className="grid gap-3">
                             <Label htmlFor="email">Email</Label>
                             <Input
                                 id="email"
                                 name="email"
-                                type="text"
+                                type="email"
                                 placeholder="m@example.com"
                                 defaultValue={state.email}
                                 required
@@ -101,7 +113,7 @@ export default function SignUpForm() {
                             />
                         </div>
 
-                        <Button type="submit" className="" disabled={pending}>
+                        <Button type="submit"  disabled={pending}>
                             Sign up
                         </Button>
                     </div>

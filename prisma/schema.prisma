@@ -45,7 +45,7 @@ model Question {
   content   String
   tags      String[] // Postgres can store array types
   createdAt DateTime       @default(now())
-  author    User           @relation(fields: [authorId], references: [id])
+  author    User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments  Comment[]
   votes     QuestionVote[]
   viewsLog  QuestionView[]
