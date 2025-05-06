@@ -3,7 +3,7 @@ import { nextCookies } from "better-auth/next-js";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./prisma";
 import { Resend } from "resend";
-import { username } from "better-auth/plugins";
+import { oAuthProxy, username } from "better-auth/plugins";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -19,6 +19,8 @@ export const auth = betterAuth({
         github: {
             clientId: process.env.GITHUB_CLIENT_ID as string,
             clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+            redirectURI:
+                "https://blaze-code-deploy.vercel.app/api/auth/callback/github",
         },
     },
     emailVerification: {
@@ -35,5 +37,5 @@ export const auth = betterAuth({
         sendOnSignUp: true,
         autoSignInAfterVerification: true,
     },
-    plugins: [username(), nextCookies()],
+    plugins: [oAuthProxy(), username(), nextCookies()],
 });
