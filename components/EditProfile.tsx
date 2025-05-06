@@ -37,6 +37,7 @@ export default function EditProfile({
 
     const [editForm, setEditForm] = useState({
         name: user.name || "",
+        username: user.username || "",
         bio: user.bio || "",
         location: user.location || "",
         website: user.website || "",
@@ -110,6 +111,20 @@ export default function EditProfile({
                                     })
                                 }
                                 placeholder="Your name"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Username</Label>
+                            <Input
+                                name="username"
+                                value={editForm.username}
+                                onChange={(e) =>
+                                    setEditForm({
+                                        ...editForm,
+                                        username: e.target.value,
+                                    })
+                                }
+                                placeholder="Add username"
                             />
                         </div>
                         <div className="space-y-2">

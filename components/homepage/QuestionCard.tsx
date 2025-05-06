@@ -54,9 +54,9 @@ export default async function QuestionCard({
                             {question.excerpt}
                         </p>
                         <div className="flex flex-wrap gap-2 mt-3">
-                            {question.tags.map((tag) => (
+                            {question.tags.map((tag, index) => (
                                 <Badge
-                                    key={tag}
+                                    key={`${question.id}-${tag}-${index}`}
                                     variant="secondary"
                                     className="font-bold hover:bg-secondary/80"
                                 >

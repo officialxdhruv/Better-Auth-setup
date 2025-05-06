@@ -70,15 +70,17 @@ export async function updateProfile(formData: FormData) {
 
         const name = formData.get("name") as string;
         const bio = formData.get("bio") as string;
+        const username = formData.get("username") as string;
         const location = formData.get("location") as string;
         const website = formData.get("website") as string;
-
+e
         const user = await prisma.user.update({
             where: {
                 id: userId,
             },
             data: {
                 name,
+                username,
                 bio,
                 location,
                 website,
@@ -137,5 +139,28 @@ export async function toggleFollow(targetUserId: string) {
     } catch (error) {
         console.log("Error in toggleFollow", error);
         return { success: false, error: "Error toggling follow" };
+    }
+}
+
+export async function getFollowDataByUserId(userId: string) {
+    try {
+        const [followers, following] = await Promise.all([
+            prisma.follows.findMany({
+                where: { followingId: userId },
+                include: { follower: true },
+            }),
+            prisma.follows.findMany({
+                where: { followerId: userId },
+                include: { following: true },
+            }),
+        ]);
+
+        return {
+            followers: followers.map((f) => f.follower),
+            following: following.map((f) => f.following),
+        };
+    } catch (error) {
+        console.error("Error fetching follow data:", error);
+        throw new Error("Failed to get follow data");
     }
 }

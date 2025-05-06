@@ -1,13 +1,17 @@
 import { getAnswersByUserId } from "@/actions/answer.action";
 import { getQuestionsByUserId } from "@/actions/question.action";
-import { getUserProfileById, isFollowing } from "@/actions/userprofile.action";
+import {
+    getFollowDataByUserId,
+    getUserProfileById,
+    isFollowing,
+} from "@/actions/userprofile.action";
 import EditProfile from "@/components/EditProfile";
 import QuestionCard from "@/components/homepage/QuestionCard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import UserCard from "@/components/UserCard";
 import { format, formatDistanceToNow } from "date-fns";
 import {
     Calendar,
@@ -25,6 +29,7 @@ export default async function Page({
 }) {
     const { userId } = await params;
     const user = await getUserProfileById(userId);
+    const { followers, following } = await getFollowDataByUserId(userId);
 
     if (!user) {
         return <div className="p-4 text-center">User not found</div>;
@@ -133,6 +138,12 @@ export default async function Page({
                                 <Lightbulb className="size-4" />
                                 Answers
                             </TabsTrigger>
+                            <TabsTrigger value="followers">
+                                Followers
+                            </TabsTrigger>
+                            <TabsTrigger value="following">
+                                Following
+                            </TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="questions" className="mt-6">
@@ -185,6 +196,34 @@ export default async function Page({
                                     <div className="text-center py-8 text-muted-foreground">
                                         No posts yet
                                     </div>
+                                )}
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="followers" className="mt-6">
+                            <div className="space-y-2">
+                                {followers.length === 0 ? (
+                                    <p>No followers found.</p>
+                                ) : (
+                                    followers.map((follower) => (
+                                        <UserCard
+                                            key={follower.id}
+                                            follower={follower}
+                                        />
+                                    ))
+                                )}
+                            </div>
+                        </TabsContent>
+                        <TabsContent value="following" className="mt-6">
+                            <div className="space-y-2">
+                                {following.length === 0 ? (
+                                    <p>No following found.</p>
+                                ) : (
+                                    following.map((following) => (
+                                        <UserCard
+                                            key={following.id}
+                                            follower={following}
+                                        />
+                                    ))
                                 )}
                             </div>
                         </TabsContent>

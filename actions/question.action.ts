@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 
 export async function createQuestion(
     title: string,
+    excerpt: string,
     content: string,
     tags: string[]
 ) {
@@ -16,11 +17,6 @@ export async function createQuestion(
     if (!session?.user) return { error: "unauthorized user" };
     const userId = session.user.id;
 
-    // Create excerpt: first 200 characters (trimmed)
-    const excerpt =
-        content.length > 200
-            ? content.substring(0, 200).trim()
-            : content.trim();
 
     try {
         const question = await prisma.question.create({
@@ -237,6 +233,15 @@ export async function addAnswer(questionId: string, content: string) {
     } catch (error) {
         return { success: false, message: "Failed to create Answer" };
     }
+}
+
+export async function getAllQuestion() {
+    const question = await prisma.question.findMany({
+        include: {
+            author: true,
+        },
+    });
+    return question;
 }
 
 /**

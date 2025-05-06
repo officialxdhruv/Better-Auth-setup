@@ -74,7 +74,7 @@ export default function HeaderProfile() {
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
                                 <Link
-                                    href={`users/${session.user.id}`}
+                                    href={`/users/${session.user.id}`}
                                     className="flex justify-between items-center"
                                 >
                                     Profile

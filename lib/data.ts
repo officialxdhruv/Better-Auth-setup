@@ -2,11 +2,11 @@ import { Home, MessageCircleQuestion, Tags } from "lucide-react";
 
 export const navItems = [
     { name: "Home", href: "/", icon: Home },
-    // {
-    //     name: "Questions",
-    //     href: "/questions",
-    //     icon: MessageCircleQuestion,
-    // },
+    {
+        name: "Questions",
+        href: "/question",
+        icon: MessageCircleQuestion,
+    },
     { name: "Tags", href: "/tags", icon: Tags },
     {
         name: "Ask Questions",

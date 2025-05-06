@@ -15,6 +15,7 @@ type FormState = {
     tags: string[];
     tagInput: string;
     title: string;
+    excerpt: string;
     content: string;
     isPosting: boolean;
 };
@@ -25,8 +26,10 @@ export default function page() {
         tagInput: "",
         title: "",
         content: "",
+        excerpt: "",
         isPosting: false,
     });
+
     const tagInputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = async () => {
@@ -39,6 +42,7 @@ export default function page() {
 
         const result = await createQuestion(
             state.title,
+            state.excerpt,
             state.content,
             state.tags
         );
@@ -49,6 +53,7 @@ export default function page() {
             setState({
                 title: "",
                 content: "",
+                excerpt: "",
                 tagInput: "",
                 tags: [],
                 isPosting: false,
@@ -130,9 +135,24 @@ export default function page() {
                                         onChange={handleChange}
                                         placeholder="e.g How to center a div with Tailwind CSS?"
                                     />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor="excerpt"
+                                        className="text-xl"
+                                    >
+                                        Short Description
+                                    </Label>
+                                    <Input
+                                        id="excerpt"
+                                        name="excerpt"
+                                        value={state.excerpt}
+                                        onChange={handleChange}
+                                        placeholder="Give a quick summary of your question"
+                                    />
                                     <p className="text-xs text-muted-foreground">
-                                        Be specific and imagine you're asking a
-                                        question to another person
+                                        This will be shown in question previews.
+                                        Keep it under 150 characters.
                                     </p>
                                 </div>
                                 <div className="space-y-2">
@@ -140,7 +160,7 @@ export default function page() {
                                         htmlFor="content"
                                         className="text-xl"
                                     >
-                                        Body
+                                        Question Details
                                     </Label>
                                     <Textarea
                                         id="content"
@@ -150,10 +170,6 @@ export default function page() {
                                         onChange={handleChange}
                                         placeholder="Include all the information someone would need to answer your question"
                                     />
-                                    <p className="text-xs text-muted-foreground">
-                                        Include all the information someone
-                                        would need to answer your question
-                                    </p>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="tags" className="text-xl">
