@@ -31,23 +31,23 @@ export const signUpEmail = validatedAction(SignUpSchema, async (data) => {
     }
 });
 
-export const loginEmail = validatedAction(LoginSchema, async (data) => {
-    const { email, password } = data;
+// export const loginEmail = validatedAction(LoginSchema, async (data) => {
+//     const { email, password } = data;
 
-    try {
-        await auth.api.signInEmail({
-            body: { email, password },
-            asResponse: true,
-        });
-        return { success: true };
-    } catch (error) {
-        if (error instanceof APIError) {
-            return {
-                error: error.message,
-                email,
-                password,
-                success: false,
-            };
-        }
-    }
-});
+//     try {
+//         await auth.api.signInEmail({
+//             body: { email, password },
+//             asResponse: true,
+//         });
+//         return { success: true };
+//     } catch (error) {
+//         if (error instanceof APIError) {
+//             return {
+//                 error: error.message,
+//                 email,
+//                 password,
+//                 success: false,
+//             };
+//         }
+//     }
+// });

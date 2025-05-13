@@ -19,8 +19,7 @@ export const auth = betterAuth({
         github: {
             clientId: process.env.GITHUB_CLIENT_ID as string,
             clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-            redirectURI:
-                "https://blaze-code-deploy.vercel.app/api/auth/callback/github",
+            redirectURI: "https://www.blazecode.me/api/auth/callback/github",
         },
     },
     emailVerification: {

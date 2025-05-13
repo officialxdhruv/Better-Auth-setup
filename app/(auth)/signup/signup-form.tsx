@@ -26,9 +26,9 @@ export default function SignUpForm() {
         {
             error: "",
             name: "",
-            username : "",
+            username: "",
             email: "",
-            passoword: "",
+            password: "",
         }
     );
 
@@ -113,7 +113,7 @@ export default function SignUpForm() {
                             />
                         </div>
 
-                        <Button type="submit"  disabled={pending}>
+                        <Button type="submit" disabled={pending}>
                             Sign up
                         </Button>
                     </div>

@@ -1,4 +1,3 @@
-import { SignOut } from "@/components/auth/AuthButtons";
 import Sidebar from "@/components/homepage/Sidebar";
 import Questions from "@/components/Questions";
 import { Button } from "@/components/ui/button";

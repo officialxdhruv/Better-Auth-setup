@@ -15,13 +15,11 @@ import { useActionState, useEffect } from "react";
 import { ActionState } from "@/lib/action-helpers";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Github } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { loginEmail } from "../login.action";
 
 export default function LoginForm() {
-    const router = useRouter();
     const [state, formAction, pending] = useActionState<ActionState, FormData>(
         loginEmail,
         {
@@ -31,13 +29,6 @@ export default function LoginForm() {
             password: "",
         }
     );
-
-    useEffect(() => {
-        if (state?.success) {
-            router.refresh();
-            router.push("/");
-        }
-    }, [state, router]);
 
     return (
         <Card className="border-0 md:border">
